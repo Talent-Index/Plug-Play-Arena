@@ -1,14 +1,23 @@
+import { useEffect, useState } from 'react';
 import { AppNavbar } from '@/components/avalanche/AppNavbar';
 import { JourneyMeter } from '@/components/avalanche/JourneyMeter';
 import { NFTBadgeCard } from '@/components/avalanche/NFTBadgeCard';
 import { Button } from '@/components/ui/button';
 import { usePlayer } from '@/lib/playerContext';
-import { AVALANCHE_GAMES, PERSONAS, gamesByPersona, JourneyStage } from '@/lib/avalanche';
+import { PERSONAS, JourneyStage, dbRowToGame, AvalancheGame } from '@/lib/avalanche';
+import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import { Calendar, Flame, Sparkles, Target } from 'lucide-react';
 
 export default function MyJourneyPage() {
   const { user, profile, nfts } = usePlayer();
+  const [personaGames, setPersonaGames] = useState<AvalancheGame[]>([]);
+
+  useEffect(() => {
+    if (!profile) return;
+    supabase.from('games').select('*').eq('persona', profile.persona).eq('status', 'live').limit(6)
+      .then(({ data }) => { if (data) setPersonaGames(data.map(dbRowToGame)); });
+  }, [profile?.persona]);
 
   if (!user || !profile) {
     return (
@@ -24,8 +33,6 @@ export default function MyJourneyPage() {
   }
 
   const persona = PERSONAS.find(p => p.id === profile.persona)!;
-  const personaGames = gamesByPersona(profile.persona);
-  const remaining = personaGames.filter(g => g.status === 'live').slice(0, 6);
   const stage = (profile.stage.charAt(0).toUpperCase() + profile.stage.slice(1)) as JourneyStage;
 
   return (
@@ -79,9 +86,9 @@ export default function MyJourneyPage() {
           </Section>
 
           <Section title="Up next for you" empty="You've cleared everything for your persona — pick a new one in Profile.">
-            {remaining.length > 0 && (
+            {personaGames.length > 0 && (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {remaining.map(g => (
+                {personaGames.map(g => (
                   <Link key={g.id} to={`/play/${g.id}`} className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 hover:border-primary/40">
                     <span className="text-2xl">{g.emoji}</span>
                     <div className="min-w-0 flex-1">
@@ -119,4 +126,3 @@ function Section({ title, empty, children }: { title: string; empty: string; chi
   );
 }
 
-void AVALANCHE_GAMES;
