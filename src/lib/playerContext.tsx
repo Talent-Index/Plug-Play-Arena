@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { Persona, AvalancheGame, AVALANCHE_GAMES } from './avalanche';
+import { Persona, AvalancheGame } from './avalanche';
 import { difficultyMultiplier, rarityFor } from './scoring';
 
 // ─── Profile shape (Cloud-backed) ────────────────────────────────────
@@ -269,7 +269,3 @@ export function useCompletedMissionIds() {
   return ids;
 }
 
-// Helper: lookup AvalancheGame from id
-export function gameById(id: string) {
-  return AVALANCHE_GAMES.find(g => g.id === id);
-}
