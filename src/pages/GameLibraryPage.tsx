@@ -6,10 +6,9 @@ import { ChallengeCard } from '@/components/avalanche/ChallengeCard';
 import { PersonaSelector } from '@/components/avalanche/PersonaSelector';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { AVALANCHE_GAMES, PERSONAS, Persona, GameCategory, Difficulty } from '@/lib/avalanche';
-import { AVALANCHE_CHALLENGES, ChallengeTier } from '@/lib/challenges';
-import { Search, Sparkles, Zap } from 'lucide-react';
-import { Gamepad2 } from 'lucide-react';
+import { PERSONAS, Persona, GameCategory, Difficulty, AvalancheGame, dbRowToGame } from '@/lib/avalanche';
+import { AvalancheChallenge, ChallengeTier, dbRowToChallenge } from '@/lib/challenges';
+import { Search, Sparkles, Zap, Gamepad2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { usePlayer } from '@/lib/playerContext';
 
@@ -30,14 +29,31 @@ export default function GameLibraryPage() {
   const [category, setCategory] = useState<typeof CATEGORIES[number]>('All');
   const [difficulty, setDifficulty] = useState<typeof DIFFICULTIES[number]>('All');
   const [tier, setTier] = useState<typeof TIERS[number]>('All');
+
+  const [games, setGames] = useState<AvalancheGame[]>([]);
+  const [challenges, setChallenges] = useState<AvalancheChallenge[]>([]);
   const [completedChallenges, setCompletedChallenges] = useState<Set<string>>(new Set());
+  const [loadingGames, setLoadingGames] = useState(true);
+  const [loadingChallenges, setLoadingChallenges] = useState(true);
+
+  useEffect(() => {
+    supabase.from('games').select('*').order('persona').order('xp_reward')
+      .then(({ data }) => {
+        if (data) setGames(data.map(dbRowToGame));
+        setLoadingGames(false);
+      });
+    supabase.from('challenges').select('*').order('xp_reward')
+      .then(({ data }) => {
+        if (data) setChallenges(data.map(dbRowToChallenge));
+        setLoadingChallenges(false);
+      });
+  }, []);
 
   useEffect(() => {
     const next = new URLSearchParams(params);
     next.set('tab', tab);
     setParams(next, { replace: true });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, setParams, params]);
+  }, [tab]);
 
   useEffect(() => {
     if (!user) return;
@@ -46,21 +62,21 @@ export default function GameLibraryPage() {
       .then(({ data }) => { if (data) setCompletedChallenges(new Set(data.map((r: { challenge_id: string }) => r.challenge_id))); });
   }, [user]);
 
-  const filteredChallenges = useMemo(() => AVALANCHE_CHALLENGES.filter(c => {
+  const filteredChallenges = useMemo(() => challenges.filter(c => {
     const q = query.trim().toLowerCase();
     const matchQ = !q || c.title.toLowerCase().includes(q) || c.tagline.toLowerCase().includes(q);
     const matchT = tier === 'All' || c.tier === tier;
     return matchQ && matchT;
-  }), [query, tier]);
+  }), [challenges, query, tier]);
 
-  const filteredGames = useMemo(() => AVALANCHE_GAMES.filter(g => {
+  const filteredGames = useMemo(() => games.filter(g => {
     const q = query.trim().toLowerCase();
     const matchQ = !q || g.title.toLowerCase().includes(q) || g.description.toLowerCase().includes(q);
     const matchP = !persona || g.persona === persona;
     const matchC = category === 'All' || g.category === category;
     const matchD = difficulty === 'All' || g.difficulty === difficulty;
     return matchQ && matchP && matchC && matchD;
-  }), [persona, query, category, difficulty]);
+  }), [games, persona, query, category, difficulty]);
 
   return (
     <div className="min-h-screen">
@@ -75,15 +91,15 @@ export default function GameLibraryPage() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-6">
-        <Tabs value={tab} onValueChange={(v) => setTab(v as 'speedrun' | 'quick')}>
+        <Tabs value={tab} onValueChange={(v) => setTab(v as 'speedrun' | 'quick' | 'arena')}>
           <TabsList className="bg-card flex-wrap">
             <TabsTrigger value="speedrun" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Sparkles className="h-3.5 w-3.5" /> Speedrun Challenges
-              <span className="ml-1 rounded-full bg-foreground/15 px-1.5 py-0.5 text-[10px]">{AVALANCHE_CHALLENGES.length}</span>
+              <span className="ml-1 rounded-full bg-foreground/15 px-1.5 py-0.5 text-[10px]">{challenges.length}</span>
             </TabsTrigger>
             <TabsTrigger value="quick" className="gap-2">
               <Zap className="h-3.5 w-3.5" /> Quick Missions
-              <span className="ml-1 rounded-full bg-muted px-1.5 py-0.5 text-[10px]">{AVALANCHE_GAMES.length}</span>
+              <span className="ml-1 rounded-full bg-muted px-1.5 py-0.5 text-[10px]">{games.length}</span>
             </TabsTrigger>
             <TabsTrigger value="arena" className="gap-2 data-[state=active]:bg-[hsl(var(--team-blue))] data-[state=active]:text-white">
               <Gamepad2 className="h-3.5 w-3.5" /> AvaUSD Arena 🎮
@@ -100,17 +116,21 @@ export default function GameLibraryPage() {
               <Select label="Tier" options={TIERS} value={tier} onChange={(v) => setTier(v as typeof tier)} />
               <div className="text-xs text-muted-foreground ml-auto">{filteredChallenges.length} {filteredChallenges.length === 1 ? 'challenge' : 'challenges'}</div>
             </div>
-            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredChallenges.map(c => (
-                <ChallengeCard
-                  key={c.id}
-                  challenge={c}
-                  completed={completedChallenges.has(c.id)}
-                  onOpen={() => navigate(`/challenge/${c.slug}`)}
-                />
-              ))}
-            </div>
-            {filteredChallenges.length === 0 && <div className="mt-12 text-center text-sm text-muted-foreground">No challenges match those filters.</div>}
+            {loadingChallenges ? (
+              <div className="mt-12 text-center text-sm text-muted-foreground">Loading challenges…</div>
+            ) : (
+              <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredChallenges.map(c => (
+                  <ChallengeCard
+                    key={c.id}
+                    challenge={c}
+                    completed={completedChallenges.has(c.id)}
+                    onOpen={() => navigate(`/challenge/${c.slug}`)}
+                  />
+                ))}
+              </div>
+            )}
+            {!loadingChallenges && filteredChallenges.length === 0 && <div className="mt-12 text-center text-sm text-muted-foreground">No challenges match those filters.</div>}
           </TabsContent>
 
           {/* QUICK MISSIONS */}
@@ -129,7 +149,9 @@ export default function GameLibraryPage() {
               <div className="text-xs text-muted-foreground ml-auto">{filteredGames.length} {filteredGames.length === 1 ? 'mission' : 'missions'}</div>
             </div>
 
-            {persona ? (
+            {loadingGames ? (
+              <div className="mt-12 text-center text-sm text-muted-foreground">Loading missions…</div>
+            ) : persona ? (
               <div className="mt-6">
                 <PersonaHeader persona={persona} />
                 <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -138,13 +160,13 @@ export default function GameLibraryPage() {
               </div>
             ) : (
               PERSONAS.map(p => {
-                const games = filteredGames.filter(g => g.persona === p.id);
-                if (games.length === 0) return null;
+                const pGames = filteredGames.filter(g => g.persona === p.id);
+                if (pGames.length === 0) return null;
                 return (
                   <div key={p.id} className="mt-8">
                     <PersonaHeader persona={p.id} />
                     <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                      {games.map(g => <GameCard key={g.id} game={g} onPlay={() => navigate(`/play/${g.id}`)} />)}
+                      {pGames.map(g => <GameCard key={g.id} game={g} onPlay={() => navigate(`/play/${g.id}`)} />)}
                     </div>
                   </div>
                 );
