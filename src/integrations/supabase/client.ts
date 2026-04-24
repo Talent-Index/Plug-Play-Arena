@@ -66,7 +66,10 @@ class QueryBuilder {
   constructor(table: string) { this._table = table; }
 
   select(cols: string = '*', opts?: { count?: string; head?: boolean }) {
-    this._op = opts?.head ? 'count' : 'select';
+    // Don't override op for DML — insert/update/upsert already return data via RETURNING *
+    if (this._op !== 'insert' && this._op !== 'update' && this._op !== 'upsert') {
+      this._op = opts?.head ? 'count' : 'select';
+    }
     this._select = cols;
     return this;
   }

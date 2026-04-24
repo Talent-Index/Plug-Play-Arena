@@ -42,7 +42,7 @@ export default async function handler(req: any, res: any) {
       const results = await sql.transaction([setQuery, fnQuery]);
       rows = results[1] as any[];
     } else {
-      rows = await sql(fnSql, sqlParams) as any[];
+      rows = await sql.query(fnSql, sqlParams) as any[];
     }
 
     // Smart result unwrapping

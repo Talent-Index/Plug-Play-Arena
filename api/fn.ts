@@ -23,6 +23,18 @@ export default async function handler(req: any, res: any) {
     const sql = getDb();
 
     switch (name) {
+      case 'verify-submission': {
+        const { submission_id } = fnBody;
+        if (!submission_id) { json(res, 400, { error: 'submission_id required' }); return; }
+        await sql`
+          UPDATE public.challenge_submissions
+          SET status = 'verified', verified = true
+          WHERE id = ${submission_id}
+        `;
+        json(res, 200, { data: { status: 'verified' }, error: null });
+        return;
+      }
+
       case 'verify-challenge': {
         // Mark submission as verified in DB
         const { attempt_id, tx_hash } = fnBody;
