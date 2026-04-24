@@ -391,204 +391,54 @@ export type Database = {
           },
         ]
       }
-      challenges: {
-        Row: {
-          id: string
-          slug: string
-          title: string
-          tagline: string
-          emoji: string
-          accent: string
-          tier: string
-          ai_ready: boolean
-          est_minutes: number
-          xp_reward: number
-          badge_title: string
-          concept: string
-          brief: string
-          steps: Json
-          build_prompt: string
-          ai_prompt: string | null
-          submission: Json
-          verification: Json
-          created_at: string
-        }
-        Insert: {
-          id: string
-          slug: string
-          title: string
-          tagline?: string
-          emoji?: string
-          accent?: string
-          tier?: string
-          ai_ready?: boolean
-          est_minutes?: number
-          xp_reward?: number
-          badge_title?: string
-          concept?: string
-          brief?: string
-          steps?: Json
-          build_prompt?: string
-          ai_prompt?: string | null
-          submission?: Json
-          verification?: Json
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          slug?: string
-          title?: string
-          tagline?: string
-          emoji?: string
-          accent?: string
-          tier?: string
-          ai_ready?: boolean
-          est_minutes?: number
-          xp_reward?: number
-          badge_title?: string
-          concept?: string
-          brief?: string
-          steps?: Json
-          build_prompt?: string
-          ai_prompt?: string | null
-          submission?: Json
-          verification?: Json
-          created_at?: string
-        }
-        Relationships: []
-      }
       events: {
         Row: {
-          agenda: Json | null
-          capacity: number | null
-          category: string | null
           cover_emoji: string | null
-          cover_image_url: string | null
           created_at: string
           current_round_id: string | null
           description: string | null
-          difficulty: string | null
-          ends_at: string | null
           format: string
-          host_user_id: string | null
+          host_user_id: string
           id: string
-          is_platform_event: boolean | null
           leaderboard_visible: boolean
           location: string | null
-          missions: string[] | null
           reward_pool: string | null
           starts_at: string | null
           status: Database["public"]["Enums"]["event_status"]
           title: string
-          tracks: string[] | null
           updated_at: string
-          zoom_url: string | null
         }
         Insert: {
-          agenda?: Json | null
-          capacity?: number | null
-          category?: string | null
           cover_emoji?: string | null
-          cover_image_url?: string | null
           created_at?: string
           current_round_id?: string | null
           description?: string | null
-          difficulty?: string | null
-          ends_at?: string | null
           format?: string
-          host_user_id?: string | null
+          host_user_id: string
           id?: string
-          is_platform_event?: boolean | null
           leaderboard_visible?: boolean
           location?: string | null
-          missions?: string[] | null
           reward_pool?: string | null
           starts_at?: string | null
           status?: Database["public"]["Enums"]["event_status"]
           title: string
-          tracks?: string[] | null
           updated_at?: string
-          zoom_url?: string | null
         }
         Update: {
-          agenda?: Json | null
-          capacity?: number | null
-          category?: string | null
           cover_emoji?: string | null
-          cover_image_url?: string | null
           created_at?: string
           current_round_id?: string | null
           description?: string | null
-          difficulty?: string | null
-          ends_at?: string | null
           format?: string
-          host_user_id?: string | null
+          host_user_id?: string
           id?: string
-          is_platform_event?: boolean | null
           leaderboard_visible?: boolean
           location?: string | null
-          missions?: string[] | null
           reward_pool?: string | null
           starts_at?: string | null
           status?: Database["public"]["Enums"]["event_status"]
           title?: string
-          tracks?: string[] | null
           updated_at?: string
-          zoom_url?: string | null
-        }
-        Relationships: []
-      }
-      games: {
-        Row: {
-          id: string
-          title: string
-          persona: string
-          category: string
-          difficulty: string
-          themes: string[]
-          description: string
-          learning_outcome: string
-          emoji: string
-          duration: string
-          xp_reward: number
-          reward_type: string
-          event_types: string[]
-          status: string
-          created_at: string
-        }
-        Insert: {
-          id: string
-          title: string
-          persona: string
-          category: string
-          difficulty?: string
-          themes?: string[]
-          description?: string
-          learning_outcome?: string
-          emoji?: string
-          duration?: string
-          xp_reward?: number
-          reward_type?: string
-          event_types?: string[]
-          status?: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          title?: string
-          persona?: string
-          category?: string
-          difficulty?: string
-          themes?: string[]
-          description?: string
-          learning_outcome?: string
-          emoji?: string
-          duration?: string
-          xp_reward?: number
-          reward_type?: string
-          event_types?: string[]
-          status?: string
-          created_at?: string
         }
         Relationships: []
       }
@@ -796,7 +646,6 @@ export type Database = {
           created_at: string
           emoji: string
           id: string
-          is_admin: boolean
           level: number
           persona: Database["public"]["Enums"]["persona"]
           stage: string
@@ -812,7 +661,6 @@ export type Database = {
           created_at?: string
           emoji?: string
           id?: string
-          is_admin?: boolean
           level?: number
           persona?: Database["public"]["Enums"]["persona"]
           stage?: string
@@ -828,7 +676,6 @@ export type Database = {
           created_at?: string
           emoji?: string
           id?: string
-          is_admin?: boolean
           level?: number
           persona?: Database["public"]["Enums"]["persona"]
           stage?: string
@@ -985,14 +832,6 @@ export type Database = {
       arena_attach_wallet: {
         Args: { _player_id: string; _wallet: string }
         Returns: undefined
-      }
-      get_admin_stats: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
       }
       arena_submit_answer: {
         Args: {
