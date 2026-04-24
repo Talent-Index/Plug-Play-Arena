@@ -32,7 +32,7 @@ export default async function handler(req: any, res: any) {
         const cParams: any[] = [];
         const cSql = buildSelectSql(table, 'id', filters, [], null, cParams);
         const countSql = `SELECT COUNT(*) AS count FROM (${cSql}) _sub`;
-        const cRows: any[] = await sql(countSql, cParams);
+        const cRows: any[] = await sql.query(countSql, cParams);
         const count = parseInt(cRows[0]?.count ?? 0, 10);
         json(res, 200, { data: [], count, error: null });
         return;
@@ -60,7 +60,7 @@ export default async function handler(req: any, res: any) {
         return;
     }
 
-    const rows: any[] = await sql(queryText, params);
+    const rows: any[] = await sql.query(queryText, params);
 
     if (single) {
       if (!rows || rows.length === 0) {
