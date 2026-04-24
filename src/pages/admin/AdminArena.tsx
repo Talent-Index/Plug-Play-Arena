@@ -11,22 +11,20 @@ const TOPICS = ['avalanche_basics','stablecoins','defi','subnets','nfts','wallet
 
 type Session = {
   id: string;
-  code: string;
+  join_code: string;
   status: string;
-  topic: string;
-  host_id: string;
-  round_index: number;
+  current_question_index: number;
+  host_user_id: string;
   created_at: string;
-  _player_count?: number;
 };
 
 type Question = {
   id: string;
   topic: string;
-  question: string;
+  question_text: string;
   options: string[];
-  answer: number;
-  explanation: string | null;
+  correct_answer: string;
+  difficulty: string;
 };
 
 type QForm = {
@@ -55,21 +53,21 @@ export default function AdminArena() {
 
   function fetchSessions() {
     setSessionsLoading(true);
-    supabase.from('arena_sessions').select('*').order('created_at', { ascending: false }).limit(20)
-      .then(({ data }) => { if (data) setSessions(data as Session[]); setSessionsLoading(false); });
+    supabase.from('game_sessions').select('*').order('created_at', { ascending: false }).limit(20)
+      .then(({ data }) => { if (data) setSessions(data as unknown as Session[]); setSessionsLoading(false); });
   }
 
   function fetchQuestions() {
     setQLoading(true);
-    supabase.from('arena_questions').select('*').order('topic').order('created_at')
-      .then(({ data }) => { if (data) setQuestions(data as Question[]); setQLoading(false); });
+    supabase.from('arena_questions').select('*').order('topic')
+      .then(({ data }) => { if (data) setQuestions(data as unknown as Question[]); setQLoading(false); });
   }
 
   useEffect(() => { fetchSessions(); fetchQuestions(); }, []);
 
   async function endSession(id: string) {
     if (!confirm('End this arena session?')) return;
-    const { error } = await supabase.from('arena_sessions').update({ status: 'ended' }).eq('id', id);
+    const { error } = await supabase.from('game_sessions').update({ status: 'ended' }).eq('id', id);
     if (error) toast.error(error.message);
     else { toast.success('Session ended.'); fetchSessions(); }
   }
@@ -77,22 +75,25 @@ export default function AdminArena() {
   function openCreateQ() { setEditingQ(null); setQForm(QEMPTY); setQOpen(true); }
   function openEditQ(q: Question) {
     setEditingQ(q);
+    const answerIdx = q.options.findIndex(o => o === q.correct_answer);
     setQForm({
-      topic: q.topic, question: q.question,
+      topic: q.topic, question: q.question_text,
       opt_a: q.options[0] ?? '', opt_b: q.options[1] ?? '',
       opt_c: q.options[2] ?? '', opt_d: q.options[3] ?? '',
-      answer: String(q.answer), explanation: q.explanation ?? '',
+      answer: String(Math.max(0, answerIdx)), explanation: '',
     });
     setQOpen(true);
   }
 
   async function saveQuestion() {
     setSavingQ(true);
+    const options = [qForm.opt_a, qForm.opt_b, qForm.opt_c, qForm.opt_d];
+    const answerIdx = parseInt(qForm.answer) || 0;
     const payload = {
-      topic: qForm.topic, question: qForm.question,
-      options: [qForm.opt_a, qForm.opt_b, qForm.opt_c, qForm.opt_d],
-      answer: parseInt(qForm.answer) || 0,
-      explanation: qForm.explanation || null,
+      topic: qForm.topic,
+      question_text: qForm.question,
+      options,
+      correct_answer: options[answerIdx] ?? '',
     };
     const { error } = editingQ
       ? await supabase.from('arena_questions').update(payload).eq('id', editingQ.id)
@@ -116,6 +117,7 @@ export default function AdminArena() {
 
   const STATUS_PILL: Record<string, string> = {
     waiting: 'bg-yellow-500/15 text-yellow-400',
+    lobby:   'bg-yellow-500/15 text-yellow-400',
     active:  'bg-green-500/15 text-green-400',
     ended:   'bg-muted/50 text-muted-foreground',
   };
@@ -148,12 +150,12 @@ export default function AdminArena() {
                   <tr><td colSpan={6} className="px-4 py-8 text-center text-xs text-muted-foreground">No arena sessions yet.</td></tr>
                 ) : sessions.map(s => (
                   <tr key={s.id} className="hover:bg-muted/20">
-                    <td className="px-4 py-3 font-mono font-bold text-primary">{s.code}</td>
-                    <td className="px-4 py-3 text-xs capitalize">{s.topic?.replace(/_/g, ' ')}</td>
+                    <td className="px-4 py-3 font-mono font-bold text-primary">{s.join_code}</td>
+                    <td className="px-4 py-3 text-xs capitalize">—</td>
                     <td className="px-4 py-3">
                       <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_PILL[s.status] ?? ''}`}>{s.status}</span>
                     </td>
-                    <td className="px-4 py-3 text-xs">{s.round_index}</td>
+                    <td className="px-4 py-3 text-xs">{s.current_question_index}</td>
                     <td className="px-4 py-3 text-xs text-muted-foreground">{new Date(s.created_at).toLocaleDateString()}</td>
                     <td className="px-4 py-3 text-right">
                       {s.status !== 'ended' && (
@@ -205,10 +207,10 @@ export default function AdminArena() {
                 {filteredQs.map(q => (
                   <tr key={q.id} className="hover:bg-muted/20">
                     <td className="px-4 py-3 max-w-xs">
-                      <div className="truncate">{q.question}</div>
+                      <div className="truncate">{q.question_text}</div>
                     </td>
                     <td className="px-4 py-3 text-xs capitalize text-muted-foreground">{q.topic.replace(/_/g, ' ')}</td>
-                    <td className="px-4 py-3 text-xs text-green-400">{q.options[q.answer]}</td>
+                    <td className="px-4 py-3 text-xs text-green-400">{q.correct_answer}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1">
                         <Button size="sm" variant="ghost" onClick={() => openEditQ(q)}><Pencil className="h-3.5 w-3.5" /></Button>

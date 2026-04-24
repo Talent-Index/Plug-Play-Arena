@@ -11,7 +11,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     supabase.rpc('get_admin_stats').then(({ data }) => {
-      if (data) setStats(data as AdminStats);
+      if (data) setStats(data as unknown as AdminStats);
     });
 
     supabase

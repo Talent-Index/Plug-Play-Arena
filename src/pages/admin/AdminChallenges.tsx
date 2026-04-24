@@ -50,7 +50,10 @@ export default function AdminChallenges() {
     setLoading(true);
     supabase.from('challenges').select('*').order('xp_reward')
       .then(({ data }) => {
-        if (data) { setChallenges(data as ChallengeRow[]); setFiltered(data as ChallengeRow[]); }
+        if (data) {
+          const rows = data as unknown as ChallengeRow[];
+          setChallenges(rows); setFiltered(rows);
+        }
         setLoading(false);
       });
   }

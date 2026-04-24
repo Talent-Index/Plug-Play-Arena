@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Settings, Shield, Zap, Database } from 'lucide-react';
 
-type AppSetting = { key: string; value: string; description: string | null };
+type AppSetting = { key: string; value: string; description?: string | null };
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState<AppSetting[]>([]);
@@ -19,9 +19,9 @@ export default function AdminSettings() {
     supabase.from('app_settings').select('*').order('key')
       .then(({ data }) => {
         if (data) {
-          setSettings(data as AppSetting[]);
+          setSettings(data as unknown as AppSetting[]);
           const initial: Record<string, string> = {};
-          (data as AppSetting[]).forEach(s => { initial[s.key] = s.value; });
+          (data as unknown as AppSetting[]).forEach(s => { initial[s.key] = s.value; });
           setEdits(initial);
         }
         setLoading(false);

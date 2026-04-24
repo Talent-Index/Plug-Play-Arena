@@ -69,7 +69,7 @@ export default function AdminSubmissions() {
   }, [query, statusFilter, submissions]);
 
   async function updateStatus(id: string, status: string) {
-    const { error } = await supabase.from('mission_attempts').update({ status }).eq('id', id);
+    const { error } = await supabase.from('mission_attempts').update({ status: status as 'completed' | 'failed' | 'in_progress' | 'timeout' }).eq('id', id);
     if (error) toast.error(error.message);
     else { toast.success(`Status → ${status}`); fetchSubmissions(); }
   }

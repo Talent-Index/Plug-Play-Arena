@@ -60,7 +60,7 @@ export default function AdminPlayers() {
 
   async function openDetail(player: Player) {
     const [missionsRes, nftsRes, eventsRes] = await Promise.all([
-      supabase.from('mission_attempts').select('id', { count: 'exact', head: true }).eq('player_id', player.id).eq('status', 'completed'),
+      supabase.from('mission_attempts').select('id', { count: 'exact', head: true }).eq('user_id', player.id).eq('status', 'completed'),
       supabase.from('nft_mints').select('id', { count: 'exact', head: true }).eq('user_id', player.id),
       supabase.from('event_participants').select('id', { count: 'exact', head: true }).eq('user_id', player.id),
     ]);

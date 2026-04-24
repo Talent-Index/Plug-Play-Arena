@@ -76,15 +76,15 @@ export default function AdminEvents() {
       difficulty: form.difficulty, reward_pool: form.reward_pool || null,
       capacity: parseInt(form.capacity) || 100,
       starts_at: form.starts_at || null, ends_at: form.ends_at || null,
-      status: form.status as EventRow['status'],
+      status: form.status as 'draft' | 'live' | 'paused' | 'ended',
       tracks: form.tracks ? form.tracks.split(',').map(s => s.trim()).filter(Boolean) : [],
       missions: form.missions ? form.missions.split(',').map(s => s.trim()).filter(Boolean) : [],
       agenda, cover_emoji: form.cover_emoji, is_platform_event: true,
     };
 
     const { error } = editing
-      ? await supabase.from('events').update(payload).eq('id', editing.id)
-      : await supabase.from('events').insert(payload);
+      ? await supabase.from('events').update(payload as never).eq('id', editing.id)
+      : await supabase.from('events').insert(payload as never);
 
     if (error) { toast.error(error.message); }
     else { toast.success(editing ? 'Event updated.' : 'Event created.'); setOpen(false); fetchEvents(); }
@@ -99,7 +99,7 @@ export default function AdminEvents() {
   }
 
   async function setStatus(id: string, status: string) {
-    const { error } = await supabase.from('events').update({ status } as { status: EventRow['status'] }).eq('id', id);
+    const { error } = await supabase.from('events').update({ status: status as 'draft' | 'live' | 'paused' | 'ended' }).eq('id', id);
     if (error) toast.error(error.message);
     else { toast.success(`Status → ${status}`); fetchEvents(); }
   }
