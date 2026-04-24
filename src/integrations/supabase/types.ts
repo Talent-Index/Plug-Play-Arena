@@ -349,6 +349,105 @@ export type Database = {
           },
         ]
       }
+      challenges: {
+        Row: {
+          accent: string
+          ai_prompt: string | null
+          ai_ready: boolean
+          badge_title: string
+          brief: string
+          build_prompt: string
+          concept: string
+          created_at: string
+          emoji: string
+          est_minutes: number
+          id: string
+          slug: string
+          steps: Json
+          submission: Json
+          tagline: string
+          tier: string
+          title: string
+          verification: Json
+          xp_reward: number
+        }
+        Insert: {
+          accent?: string
+          ai_prompt?: string | null
+          ai_ready?: boolean
+          badge_title?: string
+          brief?: string
+          build_prompt?: string
+          concept?: string
+          created_at?: string
+          emoji?: string
+          est_minutes?: number
+          id: string
+          slug: string
+          steps?: Json
+          submission?: Json
+          tagline?: string
+          tier?: string
+          title: string
+          verification?: Json
+          xp_reward?: number
+        }
+        Update: {
+          accent?: string
+          ai_prompt?: string | null
+          ai_ready?: boolean
+          badge_title?: string
+          brief?: string
+          build_prompt?: string
+          concept?: string
+          created_at?: string
+          emoji?: string
+          est_minutes?: number
+          id?: string
+          slug?: string
+          steps?: Json
+          submission?: Json
+          tagline?: string
+          tier?: string
+          title?: string
+          verification?: Json
+          xp_reward?: number
+        }
+        Relationships: []
+      }
+      daily_tasks: {
+        Row: {
+          cta_label: string
+          cta_url: string | null
+          day_index: number
+          description: string
+          emoji: string
+          id: string
+          title: string
+          xp_reward: number
+        }
+        Insert: {
+          cta_label?: string
+          cta_url?: string | null
+          day_index: number
+          description?: string
+          emoji?: string
+          id: string
+          title: string
+          xp_reward?: number
+        }
+        Update: {
+          cta_label?: string
+          cta_url?: string | null
+          day_index?: number
+          description?: string
+          emoji?: string
+          id?: string
+          title?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
       event_participants: {
         Row: {
           event_id: string
@@ -393,52 +492,82 @@ export type Database = {
       }
       events: {
         Row: {
+          agenda: Json | null
+          capacity: number | null
+          category: string | null
           cover_emoji: string | null
+          cover_image_url: string | null
           created_at: string
           current_round_id: string | null
           description: string | null
+          difficulty: string | null
+          ends_at: string | null
           format: string
-          host_user_id: string
+          host_user_id: string | null
           id: string
+          is_platform_event: boolean | null
           leaderboard_visible: boolean
           location: string | null
+          missions: string[] | null
           reward_pool: string | null
           starts_at: string | null
           status: Database["public"]["Enums"]["event_status"]
           title: string
+          tracks: string[] | null
           updated_at: string
+          zoom_url: string | null
         }
         Insert: {
+          agenda?: Json | null
+          capacity?: number | null
+          category?: string | null
           cover_emoji?: string | null
+          cover_image_url?: string | null
           created_at?: string
           current_round_id?: string | null
           description?: string | null
+          difficulty?: string | null
+          ends_at?: string | null
           format?: string
-          host_user_id: string
+          host_user_id?: string | null
           id?: string
+          is_platform_event?: boolean | null
           leaderboard_visible?: boolean
           location?: string | null
+          missions?: string[] | null
           reward_pool?: string | null
           starts_at?: string | null
           status?: Database["public"]["Enums"]["event_status"]
           title: string
+          tracks?: string[] | null
           updated_at?: string
+          zoom_url?: string | null
         }
         Update: {
+          agenda?: Json | null
+          capacity?: number | null
+          category?: string | null
           cover_emoji?: string | null
+          cover_image_url?: string | null
           created_at?: string
           current_round_id?: string | null
           description?: string | null
+          difficulty?: string | null
+          ends_at?: string | null
           format?: string
-          host_user_id?: string
+          host_user_id?: string | null
           id?: string
+          is_platform_event?: boolean | null
           leaderboard_visible?: boolean
           location?: string | null
+          missions?: string[] | null
           reward_pool?: string | null
           starts_at?: string | null
           status?: Database["public"]["Enums"]["event_status"]
           title?: string
+          tracks?: string[] | null
           updated_at?: string
+          zoom_url?: string | null
         }
         Relationships: []
       }
@@ -475,6 +604,60 @@ export type Database = {
           status?: string
           winner_claimed_at?: string | null
           winner_player_id?: string | null
+        }
+        Relationships: []
+      }
+      games: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          difficulty: string
+          duration: string
+          emoji: string
+          event_types: string[]
+          id: string
+          learning_outcome: string
+          persona: string
+          reward_type: string
+          status: string
+          themes: string[]
+          title: string
+          xp_reward: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string
+          difficulty?: string
+          duration?: string
+          emoji?: string
+          event_types?: string[]
+          id: string
+          learning_outcome?: string
+          persona: string
+          reward_type?: string
+          status?: string
+          themes?: string[]
+          title: string
+          xp_reward?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          difficulty?: string
+          duration?: string
+          emoji?: string
+          event_types?: string[]
+          id?: string
+          learning_outcome?: string
+          persona?: string
+          reward_type?: string
+          status?: string
+          themes?: string[]
+          title?: string
+          xp_reward?: number
         }
         Relationships: []
       }
@@ -643,49 +826,198 @@ export type Database = {
       }
       profiles: {
         Row: {
+          builders_hub_handle: string | null
+          builders_hub_signed: boolean
           created_at: string
+          email: string | null
           emoji: string
           id: string
+          is_admin: boolean
           level: number
           persona: Database["public"]["Enums"]["persona"]
           stage: string
           status_tag: string | null
           streak: number
+          telegram_handle: string | null
           updated_at: string
           user_id: string
           username: string
           wallet_address: string | null
+          x_handle: string | null
           xp: number
         }
         Insert: {
+          builders_hub_handle?: string | null
+          builders_hub_signed?: boolean
           created_at?: string
+          email?: string | null
           emoji?: string
           id?: string
+          is_admin?: boolean
           level?: number
           persona?: Database["public"]["Enums"]["persona"]
           stage?: string
           status_tag?: string | null
           streak?: number
+          telegram_handle?: string | null
           updated_at?: string
           user_id: string
           username: string
           wallet_address?: string | null
+          x_handle?: string | null
           xp?: number
         }
         Update: {
+          builders_hub_handle?: string | null
+          builders_hub_signed?: boolean
           created_at?: string
+          email?: string | null
           emoji?: string
           id?: string
+          is_admin?: boolean
           level?: number
           persona?: Database["public"]["Enums"]["persona"]
           stage?: string
           status_tag?: string | null
           streak?: number
+          telegram_handle?: string | null
           updated_at?: string
           user_id?: string
           username?: string
           wallet_address?: string | null
+          x_handle?: string | null
           xp?: number
+        }
+        Relationships: []
+      }
+      quest_submissions: {
+        Row: {
+          created_at: string
+          evidence: string
+          id: string
+          quest_id: string
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewer_id: string | null
+          status: string
+          user_id: string
+          xp_awarded: number
+        }
+        Insert: {
+          created_at?: string
+          evidence?: string
+          id?: string
+          quest_id: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          status?: string
+          user_id: string
+          xp_awarded?: number
+        }
+        Update: {
+          created_at?: string
+          evidence?: string
+          id?: string
+          quest_id?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          status?: string
+          user_id?: string
+          xp_awarded?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quest_submissions_quest_id_fkey"
+            columns: ["quest_id"]
+            isOneToOne: false
+            referencedRelation: "quests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quests: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          emoji: string
+          evidence_kind: string
+          id: string
+          is_active: boolean
+          placeholder: string
+          sort_order: number
+          title: string
+          xp_reward: number
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string
+          emoji?: string
+          evidence_kind?: string
+          id: string
+          is_active?: boolean
+          placeholder?: string
+          sort_order?: number
+          title: string
+          xp_reward?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          emoji?: string
+          evidence_kind?: string
+          id?: string
+          is_active?: boolean
+          placeholder?: string
+          sort_order?: number
+          title?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
+      reward_payouts: {
+        Row: {
+          amount_usd: number
+          created_at: string
+          event_id: string | null
+          id: string
+          rank: number
+          sent: boolean
+          sent_at: string | null
+          tx_hash: string | null
+          user_id: string
+          username: string
+          wallet_address: string | null
+        }
+        Insert: {
+          amount_usd?: number
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          rank: number
+          sent?: boolean
+          sent_at?: string | null
+          tx_hash?: string | null
+          user_id: string
+          username: string
+          wallet_address?: string | null
+        }
+        Update: {
+          amount_usd?: number
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          rank?: number
+          sent?: boolean
+          sent_at?: string | null
+          tx_hash?: string | null
+          user_id?: string
+          username?: string
+          wallet_address?: string | null
         }
         Relationships: []
       }
@@ -824,11 +1156,58 @@ export type Database = {
           },
         ]
       }
+      user_daily_progress: {
+        Row: {
+          completed_at: string
+          id: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_daily_progress_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "daily_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      unified_leaderboard: {
+        Row: {
+          arena_xp: number | null
+          builders_hub_signed: boolean | null
+          emoji: string | null
+          profile_xp: number | null
+          quest_xp: number | null
+          rank: number | null
+          total_xp: number | null
+          user_id: string | null
+          username: string | null
+          wallet_address: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      approve_quest_submission: {
+        Args: { _submission_id: string }
+        Returns: undefined
+      }
       arena_attach_wallet: {
         Args: { _player_id: string; _wallet: string }
         Returns: undefined
@@ -843,6 +1222,12 @@ export type Database = {
         }
         Returns: Json
       }
+      complete_daily_task: { Args: { _task_id: string }; Returns: Json }
+      finalize_event_leaderboard: {
+        Args: { _event_id: string; _pool?: number }
+        Returns: number
+      }
+      get_admin_stats: { Args: never; Returns: Json }
       get_app_setting: { Args: { _key: string }; Returns: string }
       get_event_leaderboard: {
         Args: { _event_id: string }
@@ -878,18 +1263,24 @@ export type Database = {
       get_my_profile: {
         Args: never
         Returns: {
+          builders_hub_handle: string | null
+          builders_hub_signed: boolean
           created_at: string
+          email: string | null
           emoji: string
           id: string
+          is_admin: boolean
           level: number
           persona: Database["public"]["Enums"]["persona"]
           stage: string
           status_tag: string | null
           streak: number
+          telegram_handle: string | null
           updated_at: string
           user_id: string
           username: string
           wallet_address: string | null
+          x_handle: string | null
           xp: number
         }[]
         SetofOptions: {
@@ -913,6 +1304,7 @@ export type Database = {
           xp: number
         }[]
       }
+      is_admin: { Args: never; Returns: boolean }
       is_event_host: { Args: { _event_id: string }; Returns: boolean }
       issue_reward: {
         Args: {
@@ -969,6 +1361,10 @@ export type Database = {
         }
         Returns: string
       }
+      reject_quest_submission: {
+        Args: { _reason: string; _submission_id: string }
+        Returns: undefined
+      }
       set_app_setting: {
         Args: { _key: string; _value: string }
         Returns: undefined
@@ -986,6 +1382,10 @@ export type Database = {
           _xp_reward: number
         }
         Returns: Json
+      }
+      submit_quest: {
+        Args: { _evidence: string; _quest_id: string }
+        Returns: string
       }
     }
     Enums: {
