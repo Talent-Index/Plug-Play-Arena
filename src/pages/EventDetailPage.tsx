@@ -8,7 +8,7 @@ import { GameCard } from '@/components/avalanche/GameCard';
 import { AvalancheEvent, AvalancheGame, dbRowToEvent, dbRowToGame, PERSONAS } from '@/lib/avalanche';
 import { usePlayer } from '@/lib/playerContext';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Calendar, MapPin, Trophy, Users, Video, CheckCircle2, Clock, XCircle, Sparkles, Lock } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Trophy, Users, Video, CheckCircle2, Clock, Sparkles, Lock, Gamepad2, Crown } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface EventQuest {
@@ -26,6 +26,12 @@ interface QuestSub {
   status: 'pending' | 'approved' | 'rejected';
   xp_awarded: number;
 }
+interface GameSession {
+  id: string;
+  join_code: string;
+  status: 'lobby' | 'live' | 'finished';
+  host_user_id: string;
+}
 
 export default function EventDetailPage() {
   const { id } = useParams();
@@ -41,6 +47,10 @@ export default function EventDetailPage() {
   const [questSubs, setQuestSubs] = useState<Map<string, QuestSub>>(new Map());
   const [questAnswers, setQuestAnswers] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState<string | null>(null);
+  const [gameSession, setGameSession] = useState<GameSession | null | undefined>(undefined);
+  const [startingGame, setStartingGame] = useState(false);
+
+  const isAdmin = !!(user?.app_metadata?.is_admin);
 
   useEffect(() => {
     if (!id) return;
@@ -86,6 +96,18 @@ export default function EventDetailPage() {
       .then(({ data }) => { if (data) setEventQuests(data as EventQuest[]); });
   }, [id]);
 
+  // Poll for active game session linked to this event
+  useEffect(() => {
+    if (!id) return;
+    const fetchSession = () =>
+      supabase.from('game_sessions').select('*').eq('event_id', id).neq('status', 'finished')
+        .order('created_at', { ascending: false }).limit(1).maybeSingle()
+        .then(({ data }) => setGameSession((data as GameSession) ?? null));
+    fetchSession();
+    const timer = setInterval(fetchSession, 5000);
+    return () => clearInterval(timer);
+  }, [id]);
+
   useEffect(() => {
     if (!user || eventQuests.length === 0) return;
     const ids = eventQuests.map(q => q.id);
@@ -118,6 +140,24 @@ export default function EventDetailPage() {
         </div>
       </div>
     );
+  }
+
+  async function handleStartGame() {
+    if (!user || !id) return;
+    setStartingGame(true);
+    try {
+      const joinCode = String(Math.floor(100000 + Math.random() * 900000));
+      const { data, error } = await supabase.from('game_sessions')
+        .insert({ host_user_id: user.id, join_code: joinCode, event_id: id, topic: 'gaming_avax' })
+        .select().single();
+      if (error) throw error;
+      setGameSession(data as GameSession);
+      toast.success('Game created! Share the code with attendees.');
+    } catch (e: any) {
+      toast.error(e.message ?? 'Failed to start game');
+    } finally {
+      setStartingGame(false);
+    }
   }
 
   async function handleJoin() {
@@ -235,7 +275,7 @@ export default function EventDetailPage() {
                               {quest.evidence_kind !== 'none' && (
                                 <Input
                                   className="h-8 text-xs"
-                                  placeholder={quest.placeholder}
+                                  placeholder={quest.evidence_kind === 'wallet' ? '0x...' : quest.evidence_kind === 'url' ? 'https://...' : quest.evidence_kind === 'handle' ? '@yourhandle' : 'Type your answer…'}
                                   value={questAnswers[quest.id] ?? ''}
                                   onChange={e => setQuestAnswers(p => ({ ...p, [quest.id]: e.target.value }))}
                                 />
@@ -279,6 +319,62 @@ export default function EventDetailPage() {
               <p className="mt-4 text-sm text-muted-foreground">No missions configured for this event yet.</p>
             </div>
           )}
+
+          {/* Live Trivia Game */}
+          <div className="rounded-xl border border-border bg-card p-6">
+            <div className="flex items-center gap-2 mb-1">
+              <Gamepad2 className="h-5 w-5 text-primary" />
+              <h2 className="font-display text-xl tracking-wider">Live Trivia Game</h2>
+              {gameSession?.status === 'live' && (
+                <span className="ml-auto text-[11px] text-primary animate-pulse">● Live</span>
+              )}
+              {gameSession?.status === 'lobby' && (
+                <span className="ml-auto text-[11px] text-muted-foreground">● Lobby open</span>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground mb-5">
+              10 questions about Gaming on Avalanche. Compete live and earn XP on the leaderboard.
+            </p>
+
+            {gameSession === undefined ? (
+              <p className="text-xs text-muted-foreground">Loading…</p>
+            ) : gameSession === null ? (
+              isAdmin ? (
+                <Button onClick={handleStartGame} disabled={startingGame} className="gap-2 w-full sm:w-auto">
+                  <Crown className="h-4 w-4" />
+                  {startingGame ? 'Creating…' : 'Start Trivia Game'}
+                </Button>
+              ) : (
+                <p className="text-sm text-muted-foreground">The trivia game hasn't started yet. Check back soon!</p>
+              )
+            ) : (
+              <div className="space-y-4">
+                <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-center">
+                  <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Join Code</p>
+                  <p className="font-display text-4xl tracking-[0.3em] text-primary">{gameSession.join_code}</p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  {isAdmin && (
+                    <Button asChild className="flex-1 gap-2">
+                      <Link to={`/arena/join/${gameSession.join_code}`}>
+                        <Crown className="h-4 w-4" /> Host Game
+                      </Link>
+                    </Button>
+                  )}
+                  <Button asChild variant={isAdmin ? 'secondary' : 'default'} className="flex-1 gap-2">
+                    <Link to={`/arena/join/${gameSession.join_code}`}>
+                      <Gamepad2 className="h-4 w-4" /> Join Trivia
+                    </Link>
+                  </Button>
+                </div>
+                {isAdmin && (
+                  <Button variant="ghost" size="sm" className="w-full text-muted-foreground" onClick={handleStartGame} disabled={startingGame}>
+                    Start new session
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         <aside className="rounded-xl border border-border bg-card p-5">
