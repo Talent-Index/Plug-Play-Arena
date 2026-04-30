@@ -17,6 +17,8 @@ export interface ArenaSession {
   join_code: string; current_question_index: number;
   question_started_at: string | null;
   winner_player_id: string | null;
+  event_id: string | null;
+  topic: string | null;
   created_at: string;
 }
 type Phase = 'idle' | 'lobby' | 'question' | 'reveal' | 'leaderboard' | 'finished';
@@ -151,8 +153,11 @@ export function ArenaProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(iv);
   }, [session?.question_started_at, session?.status, phase]);
 
-  const loadQuestions = async () => {
-    const { data } = await supabase.from('arena_questions').select('*').limit(10);
+  const loadQuestions = async (topic?: string | null) => {
+    let q = supabase.from('arena_questions').select('*');
+    if (topic) q = q.eq('topic', topic);
+    else q = q.limit(10);
+    const { data } = await q;
     setQuestions((data ?? []) as ArenaQuestion[]);
   };
 
@@ -176,6 +181,7 @@ export function ArenaProvider({ children }: { children: ReactNode }) {
       if (error || !s) throw new Error('Session not found');
       const sess = s as ArenaSession;
       if (sess.status === 'finished') throw new Error('Game already finished');
+      // Store topic for question loading below
 
       // Reuse existing player: by user_id (signed in) OR by guest playerId in localStorage.
       let existing: ArenaPlayer | null = null;
@@ -208,7 +214,7 @@ export function ArenaProvider({ children }: { children: ReactNode }) {
         if (!user) saveGuestPlayer(sess.id, player.id);
       }
 
-      await loadQuestions();
+      await loadQuestions(sess.topic);
       setMyPlayerId(player.id);
       setSession(sess);
       applySession(sess);
