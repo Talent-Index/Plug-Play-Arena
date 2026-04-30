@@ -88,6 +88,7 @@ class QueryBuilder {
   lt(col: string, val: any)  { this._filters.push({ col, op: 'lt', val }); return this; }
   lte(col: string, val: any) { this._filters.push({ col, op: 'lte', val }); return this; }
   ilike(col: string, val: any) { this._filters.push({ col, op: 'like', val }); return this; }
+  is(col: string, val: null | 'null') { this._filters.push({ col, op: val === null ? 'is_null' : 'not_null', val: null }); return this; }
   order(col: string, opts?: { ascending?: boolean }) {
     this._order.push({ col, ascending: opts?.ascending ?? true }); return this;
   }

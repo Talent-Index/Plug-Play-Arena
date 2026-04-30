@@ -158,6 +158,8 @@ export function buildSelectSql(
     if (f.op === 'lt')   { whereParts.push(`${col} < ${p}`); continue; }
     if (f.op === 'lte')  { whereParts.push(`${col} <= ${p}`); continue; }
     if (f.op === 'like') { whereParts.push(`${col} ILIKE ${p}`); continue; }
+    if (f.op === 'is_null') { params.pop(); whereParts.push(`${col} IS NULL`); continue; }
+    if (f.op === 'not_null') { params.pop(); whereParts.push(`${col} IS NOT NULL`); continue; }
   }
 
   const parts = [

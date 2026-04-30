@@ -51,6 +51,7 @@ export default function QuestsPage() {
     supabase.from('quests')
       .select('*')
       .eq('is_active', true)
+      .is('event_id', null)
       .order('sort_order', { ascending: true })
       .then(({ data }) => {
         if (data) setQuests(data as Quest[]);
