@@ -35,6 +35,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   community: 'Community',
   wallet: 'Wallet',
   builders_hub: 'Builders Hub',
+  gaming: '🎮 Gaming on Avalanche',
 };
 
 export default function QuestsPage() {

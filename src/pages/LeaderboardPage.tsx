@@ -67,7 +67,7 @@ export default function LeaderboardPage() {
               <div className="mt-8 grid grid-cols-3 gap-3">
                 {filtered.slice(0, 3).map((entry, idx) => {
                   const rank = idx + 1;
-                  const heights = ['h-32','h-40','h-28'];
+                  const heights = ['h-40','h-32','h-24'];
                   const order = [1, 0, 2];
                   return (
                     <div key={entry.user_id} className="flex flex-col items-center justify-end" style={{ order: order[idx] }}>
