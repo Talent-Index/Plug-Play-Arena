@@ -128,6 +128,53 @@ export type Database = {
           },
         ]
       }
+      arena_match_results: {
+        Row: {
+          arena_distributed: number
+          concepts: Json
+          created_at: string
+          id: string
+          mode: string
+          room_id: string
+          standings: Json
+          winner_nickname: string | null
+          winner_player_id: string | null
+          winner_user_id: string | null
+        }
+        Insert: {
+          arena_distributed?: number
+          concepts?: Json
+          created_at?: string
+          id?: string
+          mode: string
+          room_id: string
+          standings?: Json
+          winner_nickname?: string | null
+          winner_player_id?: string | null
+          winner_user_id?: string | null
+        }
+        Update: {
+          arena_distributed?: number
+          concepts?: Json
+          created_at?: string
+          id?: string
+          mode?: string
+          room_id?: string
+          standings?: Json
+          winner_nickname?: string | null
+          winner_player_id?: string | null
+          winner_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "arena_match_results_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "arena_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       arena_players: {
         Row: {
           id: string
@@ -246,6 +293,175 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      arena_room_events: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          message: string
+          payload: Json
+          player_id: string | null
+          room_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          message: string
+          payload?: Json
+          player_id?: string | null
+          room_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          message?: string
+          payload?: Json
+          player_id?: string | null
+          room_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "arena_room_events_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "arena_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      arena_room_players: {
+        Row: {
+          arena_tokens: number
+          chain_color: string
+          chain_health: number
+          emoji: string
+          energy: number
+          id: string
+          is_bot: boolean
+          is_ready: boolean
+          joined_at: string
+          nickname: string
+          room_id: string
+          score: number
+          seat: number
+          territories: number
+          user_id: string | null
+          validators: number
+          warriors: Json
+          xp_earned: number
+        }
+        Insert: {
+          arena_tokens?: number
+          chain_color?: string
+          chain_health?: number
+          emoji?: string
+          energy?: number
+          id?: string
+          is_bot?: boolean
+          is_ready?: boolean
+          joined_at?: string
+          nickname: string
+          room_id: string
+          score?: number
+          seat: number
+          territories?: number
+          user_id?: string | null
+          validators?: number
+          warriors?: Json
+          xp_earned?: number
+        }
+        Update: {
+          arena_tokens?: number
+          chain_color?: string
+          chain_health?: number
+          emoji?: string
+          energy?: number
+          id?: string
+          is_bot?: boolean
+          is_ready?: boolean
+          joined_at?: string
+          nickname?: string
+          room_id?: string
+          score?: number
+          seat?: number
+          territories?: number
+          user_id?: string | null
+          validators?: number
+          warriors?: Json
+          xp_earned?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "arena_room_players_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "arena_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      arena_rooms: {
+        Row: {
+          actions_per_turn: number
+          actions_remaining: number
+          board: Json
+          code: string
+          created_at: string
+          current_player_id: string | null
+          current_round: number
+          event_mode: boolean
+          host_user_id: string
+          id: string
+          max_players: number
+          max_rounds: number
+          mode: string
+          status: string
+          turn_seconds: number
+          turn_started_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          actions_per_turn?: number
+          actions_remaining?: number
+          board?: Json
+          code: string
+          created_at?: string
+          current_player_id?: string | null
+          current_round?: number
+          event_mode?: boolean
+          host_user_id: string
+          id?: string
+          max_players?: number
+          max_rounds?: number
+          mode?: string
+          status?: string
+          turn_seconds?: number
+          turn_started_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actions_per_turn?: number
+          actions_remaining?: number
+          board?: Json
+          code?: string
+          created_at?: string
+          current_player_id?: string | null
+          current_round?: number
+          event_mode?: boolean
+          host_user_id?: string
+          id?: string
+          max_players?: number
+          max_rounds?: number
+          mode?: string
+          status?: string
+          turn_seconds?: number
+          turn_started_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       broadcasts: {
         Row: {
