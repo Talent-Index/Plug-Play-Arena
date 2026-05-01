@@ -18,6 +18,10 @@ import ChallengePage from "./pages/ChallengePage";
 import AuthPage from "./pages/AuthPage";
 import QuestsPage from "./pages/QuestsPage";
 import NotFound from "./pages/NotFound";
+import AvalancheArenaIntro from "./pages/avalanche-arena/AvalancheArenaIntro";
+import AvalancheArenaLobby from "./pages/avalanche-arena/AvalancheArenaLobby";
+import AvalancheArenaPlay from "./pages/avalanche-arena/AvalancheArenaPlay";
+import AvalancheArenaResults from "./pages/avalanche-arena/AvalancheArenaResults";
 import ArenaHostPage from "./pages/ArenaHostPage";
 import ArenaJoinPage from "./pages/ArenaJoinPage";
 import ArenaPlayerPage from "./pages/ArenaPlayerPage";
@@ -56,6 +60,11 @@ const App = () => (
             <Route path="/quests" element={<QuestsPage />} />
             <Route path="/journey" element={<MyJourneyPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/games" element={<GameLibraryPage />} />
+            <Route path="/games/avalanche-arena" element={<AvalancheArenaIntro />} />
+            <Route path="/games/avalanche-arena/lobby" element={<AvalancheArenaLobby />} />
+            <Route path="/games/avalanche-arena/play" element={<AvalancheArenaPlay />} />
+            <Route path="/games/avalanche-arena/results" element={<AvalancheArenaResults />} />
             <Route path="/arena" element={<ArenaLayout />}>
               <Route index element={<ArenaHostPage />} />
               <Route path="join/:code?" element={<ArenaJoinPage />} />

@@ -91,6 +91,34 @@ export default function GameLibraryPage() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-6">
+        {/* Featured: AvalancheArena */}
+        <section className="mb-6 rounded-2xl border border-border bg-gradient-to-br from-primary/15 via-card to-card p-5 sm:p-6">
+          <div className="flex flex-wrap items-start gap-4">
+            <div className="text-5xl">🏔️</div>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] uppercase text-primary">New · Prototype</span>
+                <span className="rounded-full border border-border px-2 py-0.5 text-[10px] uppercase text-muted-foreground">Strategy / Blockchain Learning</span>
+              </div>
+              <h2 className="mt-2 font-display text-xl tracking-wider sm:text-2xl">AvalancheArena: Chain Conquest</h2>
+              <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+                Build your chain, deploy NFT warriors, defend validators, and conquer rival chains while learning Avalanche.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button onClick={() => navigate('/games/avalanche-arena/lobby')} className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-xs font-medium text-primary-foreground hover:bg-primary/90">
+                  <Gamepad2 className="h-3.5 w-3.5" /> Play Game
+                </button>
+                <button onClick={() => navigate('/games/avalanche-arena')} className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-xs hover:bg-muted">
+                  📜 View Rules
+                </button>
+                <button onClick={() => navigate('/games/avalanche-arena')} className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-xs hover:bg-muted">
+                  🎓 Learn Avalanche Concepts
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <Tabs value={tab} onValueChange={(v) => setTab(v as 'speedrun' | 'quick' | 'arena')}>
           <TabsList className="bg-card flex-wrap">
             <TabsTrigger value="speedrun" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
