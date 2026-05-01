@@ -35,8 +35,8 @@ export default function HomePage() {
       supabase.from('games').select('id', { count: 'exact', head: true }),
       supabase.from('events').select('id', { count: 'exact', head: true }),
     ]).then(([g, e]) => setCounts({
-      games: (g as { count: number | null }).count ?? 0,
-      events: (e as { count: number | null }).count ?? 0,
+      games: (g as unknown as { count: number | null }).count ?? 0,
+      events: (e as unknown as { count: number | null }).count ?? 0,
     }));
   }, []);
 

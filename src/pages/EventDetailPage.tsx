@@ -65,7 +65,7 @@ export default function EventDetailPage() {
       .from('event_participants')
       .select('id', { count: 'exact', head: true })
       .eq('event_id', id)
-      .then((res) => setParticipantCount((res as { count: number | null }).count ?? 0));
+      .then((res) => setParticipantCount((res as unknown as { count: number | null }).count ?? 0));
   }, [id]);
 
   useEffect(() => {
