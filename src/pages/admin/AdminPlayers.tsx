@@ -66,9 +66,9 @@ export default function AdminPlayers() {
     ]);
     setDetail({
       ...player,
-      missions_count: missionsRes.count ?? 0,
-      nft_count: nftsRes.count ?? 0,
-      events_count: eventsRes.count ?? 0,
+      missions_count: (missionsRes as unknown as { count: number | null }).count ?? 0,
+      nft_count: (nftsRes as unknown as { count: number | null }).count ?? 0,
+      events_count: (eventsRes as unknown as { count: number | null }).count ?? 0,
     });
     setDetailOpen(true);
   }
