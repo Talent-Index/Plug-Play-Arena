@@ -67,12 +67,12 @@ export default function AvalancheArenaPlay() {
         const next = payload.new as unknown as RoomRow | null;
         if (next) setRoom(next);
       })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'arena_room_players', filter: `room_id=eq.${roomId}` }, (payload) => {
-        const np = payload.new as unknown as PlayerRow | null;
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'arena_room_players', filter: `room_id=eq.${roomId}` }, (payload: { new: unknown; old: unknown; eventType?: string }) => {
+        const np = payload.new as PlayerRow | null;
         if (payload.eventType === 'DELETE') {
-          const old = payload.old as unknown as { id: string };
+          const old = payload.old as { id: string };
           setPlayers((ps) => ps.filter((p) => p.id !== old.id));
-        } else if (np) {
+        } else if (np && np.id) {
           setPlayers((ps) => {
             const i = ps.findIndex((p) => p.id === np.id);
             if (i === -1) return [...ps, np].sort((a, b) => a.seat - b.seat);
